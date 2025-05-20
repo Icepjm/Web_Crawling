@@ -1,0 +1,29 @@
+from socket import *
+
+with socket(AF_INET, SOCK_STREAM) as Server_socket:
+    try:
+        target_ip = '192.168.44.1'
+        target_port = 8080
+        # AF_INET:主机IP，SOCK_STREAM:TCP协议
+        Server_socket.bind((target_ip, target_port))
+        Server_socket.listen(1)
+        print('服务器正在监听')
+        '''
+        .listen()方法不会阻塞程序
+        .accept()方法会阻塞程序
+    
+        .listen(1) 和 listen(2)的区别：
+            同一时间，最多只有一个客户端连接能够处于“已完成握手、等待服务器处理”的状态。
+            如果服务器处理速度慢，或者客户端连接请求非常快，新的连接可能会被拒绝。
+        '''
+        # print(Server_socket.accept())
+        connect, client_ip = Server_socket.accept()
+        connect_1, client_ip_1 = Server_socket.accept()
+        print('connect:', connect, "client_ip:", client_ip)
+        print('连接成功')
+        acc = connect.recv(1024).decode('gbk')
+        acc1 = connect_1.recv(1024).decode('gbk')
+        print('acc:',acc)
+        print('acc1:',acc1)
+    except Exception as e:
+        print('error：', e)
