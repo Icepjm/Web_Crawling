@@ -1,0 +1,10 @@
+import requests
+url = 'https://img-baofun.zhhainiao.com/pcwallpaper_ugc/static/af5912818d32835840957a5d40040b22.jpg?x-oss-process=image%2fresize%2cm_lfit%2cw_3840%2ch_2160'
+head={
+    'user_agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0'
+}
+
+res = requests.get(url,headers=head)
+print(res.content)
+with open('scenery.png','wb') as f:
+    f.write(res.content)
