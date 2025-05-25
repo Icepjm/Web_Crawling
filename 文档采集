@@ -1,0 +1,22 @@
+import requests
+url = 'https://movie.douban.com/'
+head={
+   'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+}
+'''
+此处 :
+    url是位置参数
+    head是关键字参数
+    所以 url不许要指定，但是head需要指定关键字
+'''
+res = requests.get(url, headers=head)
+'''
+一下两种写法都是错误的
+res = requests.get(headers=head) # 第一个url是位置参数不能缺少
+res = requests.get(headers=head,url) # url位置必须放在第一个位置
+'''
+print(res.text)
+
+with open('豆瓣.html', 'w',encoding='utf-8') as f:
+        f.write(res.text)
+        
