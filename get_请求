@@ -1,0 +1,33 @@
+import requests
+'''
+不同页面url比较：
+    web_page1='https://movie.douban.com/review/best/?start=0'
+    web_page2='https://movie.douban.com/review/best/?start=20'
+    web_page3='https://movie.douban.com/review/best/?start=40'
+请求方法
+GET'
+'''
+# head的内容不要写错了，大小写可以变换，但是格式不能变，中间 - 不能写成 _
+head={
+    'USer-agenT':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0'
+      }
+# head = {
+#     'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
+# }
+
+
+for i in range(5):
+    url = f'https://movie.douban.com/review/best/?start={i*20}'
+    res = requests.get(url, headers=head)
+    with open(f'豆瓣_{i+1}.html','w',encoding='utf-8') as f:
+        f.write(res.text)
+        print(res.text)
+url='https://movie.douban.com/review/best/?start=0'
+res = requests.get(url,headers=head)
+with open('text.html','w',encoding='utf-8') as f : # 注意编码格式，否则可能部分乱码
+    '''
+    查看编码格式步骤：
+        找到网页代码里面的<head>标签内部<meta>标签查看
+    '''
+    f.write(res.text)
+    print(res.text)
