@@ -1,0 +1,53 @@
+import requests
+
+url = 'https://api-c.liepin.com/api/com.liepin.searchfront4c.pc-search-job'
+head = {
+    "Accept": 'application/json, text/plain, */*',
+    "Accept-Encoding": 'gzip, deflate, br, zstd',
+    "Accept-Language": 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+    "Connection": 'keep-alive',
+    "Content-Length": '441',
+    "Content-Type": 'application/json;charset=UTF-8',
+    "Cookie": 'XSRF-TOKEN=__URDEKdR_OMBGWErqC3Ew; __gc_id=218ab4a531ba47b29b0f5a2334500c54; _ga=GA1.1.459877188.1748152516; __uuid=1748152516840.59; __tlog=1748152516850.09%7C00000000%7C00000000%7Cs_o_007%7Cs_o_007; acw_tc=276082a017481525176713488e08bb5f705d58064cdd81aca5b4c9fd194ea4; __session_seq=4; __tlg_event_seq=60; _ga_54YTJKWN86=GS2.1.s1748152516$o1$g1$t1748152559$j0$l0$h0',
+    "Host": 'api-c.liepin.com',
+    "Origin": 'https://www.liepin.com',
+    "Referer": 'https://www.liepin.com/',
+    "Sec-Fetch-Dest": 'empty',
+    "Sec-Fetch-Mode": 'cors',
+    "Sec-Fetch-Site": 'same-site',
+    "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0',
+    "X-Client-Type": 'web',
+    "X-Fscp-Bi-Stat": '{"location": "https://www.liepin.com/zhaopin/?inputFrom=www_index&workYearCode=0&key=python&scene=input&ckId=4dsnt04wqth7u5yxegni75n3kvrxpa88&dq="}',
+    "X-Fscp-Fe-Version": '',
+    "X-Fscp-Std-Info": '{"client_id": "40108"}',
+    "X-Fscp-Trace-Id": '034b3f29-9464-44be-af39-0089fdfa42f9',
+    "X-Fscp-Version": '1.1',
+    "X-Requested-With": 'XMLHttpRequest',
+    "X-XSRF-TOKEN": '__URDEKdR_OMBGWErqC3Ew',
+    "sec-ch-ua": '"Chromium";v="136", "Microsoft Edge";v="136", "Not.A/Brand";v="99"',
+    "sec-ch-ua-mobile": '?0',
+    "sec-ch-ua-platform": '"Windows"',
+
+}
+data = {"data": {
+    "mainSearchPcConditionForm": {"city": "410", "dq": "410", "pubTime": "", "currentPage": 0, "pageSize": 40,
+                                  "key": "python", "suggestTag": "", "workYearCode": "0", "compId": "", "compName": "",
+                                  "compTag": "", "industry": "", "salaryCode": "", "jobKind": "", "compScale": "",
+                                  "compKind": "", "compStage": "", "eduLevel": "", "salaryLow": "", "salaryHigh": ""},
+    "passThroughForm": {"scene": "input", "skId": "", "fkId": "", "ckId": "5nwdt0w1asn176u1fl7tw02rsr8x68q9"}}}
+
+res = requests.post(url, headers=head, json=data)
+print(res.text)
+res_json = res.json()
+print(type(res_json))
+print('-----------------------------------------------')
+print(res_json)
+with open('post_res.txt', 'w', encoding='utf-8') as f:
+    f.write(res.text)
+
+company = []
+for job_d in res_json['data']['data']['jobCardList']:
+    company_name=job_d['comp']['compName']
+    company.append(company_name)
+for i in range(len(company)):
+    print(company[i])
