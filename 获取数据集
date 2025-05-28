@@ -1,0 +1,95 @@
+"""
+    采集不同王者荣耀不同英雄的皮肤图片，保存到不同的文件夹（苍的图片就保存到苍的文件夹里面）
+      保存图片
+         1. 获取图片的url
+         2. 向url发送请求
+         3. 获取图片的二进制 保存 到不同的文件夹 os模块
+
+
+
+    不同英雄皮肤图片 跟页面展示的数量有关系？ 不知道有多少数量
+    第一个英雄
+    https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/558/558-bigskin-1.jpg
+    https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/558/558-bigskin-2.jpg
+
+    第二个英雄
+    https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/577/577-bigskin-3.jpg
+    https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/577/577-bigskin-1.jpg
+    https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/577/577-bigskin-2.jpg
+
+    第三英雄
+     https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/177/177-bigskin-4.jpg
+
+    如果我可以掌握 588/577变化规则 还要一个英雄皮肤图片数量 是不是可以拿到不同英雄所有的皮肤图片
+
+
+    上一个页面决定 我是怎么进入到这个不同英雄的页面？
+
+        1 2 3 4 5 6 7 8 9 10
+        传递不同参数 返回不同页面数据给你
+        a b c d e f g h i g
+
+    通过内容搜索的 中文数据 没有找到对应数据包
+
+    1.数据包
+        XXX_list(集合)
+    2.如果数据很多的情况下 优先查看XHR 异步请求
+        heroList
+"""
+
+# 这个爬虫程序的主要工作流程如下：
+# 伪装请求头：设置 User-Agent 模拟浏览器访问，避免被网站反爬机制拦截
+# 获取英雄列表：从王者荣耀官网获取包含所有英雄信息的 JSON 数据
+# 解析英雄信息：提取每个英雄的 ID、名称和皮肤信息
+# 构建图片 URL：根据英雄 ID 和皮肤序号构建皮肤图片的完整 URL
+# 创建保存目录：为每个英雄创建单独的文件夹用于存放皮肤图片
+# 下载并保存图片：发送 HTTP 请求获取图片数据，并保存到对应的文件夹中
+
+
+import os  # 用于文件和目录操作
+import requests  # 用于发送HTTP请求
+
+# 目标URL，包含所有英雄的JSON数据
+url = 'https://pvp.qq.com/web201605/js/herolist.json'
+
+# 设置请求头，模拟Chrome浏览器访问，避免被网站识别为爬虫
+head = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
+}
+
+# 发送请求获取英雄列表数据
+res = requests.get(url, headers=head)
+
+# 获取当前工作目录，用于保存图片
+os_path = os.getcwd()
+
+# 遍历JSON数据中的每个英雄
+for i in res.json():
+    # 获取英雄的皮肤列表并计算皮肤数量
+    skin_names = i['skin_name'].split('|')
+    skin_count = len(skin_names)
+
+    # 遍历该英雄的每个皮肤
+    for index in range(skin_count):
+        # 构建皮肤图片的URL，注意index+1是因为皮肤序号从1开始
+        img_url = f'https://game.gtimg.cn/images/yxzj/img201606/skin/hero-info/{i["ename"]}/{i["ename"]}-bigskin-{index + 1}.jpg'
+
+        # 发送请求获取图片数据
+        res_list = requests.get(url=img_url, headers=head)
+
+        # 构建英雄文件夹路径
+        os_path_hero = os_path + '/' + i['cname']
+
+        # 检查文件夹是否存在，不存在则创建
+        if not os.path.exists(os_path_hero):
+            os.mkdir(os_path_hero)
+
+        # 保存图片到对应的英雄文件夹中
+        # 注意：这里文件名使用了英雄名+索引，可能导致皮肤名称不准确
+        with open(f'{os_path_hero}/{i["cname"] + str(index)}.jpg', 'wb') as f:
+            f.write(res_list.content)
+
+    # break  # 注释掉break可以下载所有英雄，否则只下载第一个英雄
+
+
+# 思路复杂
