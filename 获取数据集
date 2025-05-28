@@ -1,0 +1,44 @@
+'''
+船长：
+https://game.gtimg.cn/images/yxzj/img201606/heroimg/128/128-smallskin-6.jpg
+https://game.gtimg.cn/images/yxzj/img201606/heroimg/128/128-smallskin-5.jpg
+狄仁杰：
+https://game.gtimg.cn/images/yxzj/img201606/heroimg/133/133-smallskin-2.jpg
+https://game.gtimg.cn/images/yxzj/img201606/heroimg/133/133-smallskin-3.jpg
+
+'''
+import requests
+import os
+
+url = 'https://pvp.qq.com/web201605/js/herolist.json'
+head = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0'
+}
+res = requests.get(url, headers=head)
+# print(res.text)
+# print(type(res.text))
+res_json = res.json()
+# print(res_json,type(res_json))
+with open('res.txt', 'w') as f:
+    f.write(res.text)
+for item in res_json:
+    if not (os.path.exists(f'{item["cname"]}')):
+        os.mkdir(f"{item['cname']}")
+    skin_list = item['skin_name'].split('|')
+    counts = len(skin_list)
+    for i in range(counts):
+        url_parameter = f'https://game.gtimg.cn/images/yxzj/img201606/heroimg/{item["ename"]}/{item["ename"]}-smallskin-{i + 1}.jpg'
+        res = requests.get(url_parameter, headers=head)
+        with open(f'./{item["cname"]}/{skin_list[i]}.jpg', 'wb') as f:
+            f.write(res.content)
+
+# url_c = 'https://game.gtimg.cn/images/yxzj/img201606/heroimg/128/128-smallskin-2.jpg'
+# res_c=requests.get(url_c,headers= head)
+# with open('res_c.png','wb') as f:
+# #         f.write(res_c.content)
+# # print(res_c.content)
+
+# print(res_json[0]['skin_name'])
+# skin_list = res_json[0]['skin_name'].split('|')
+# # print(type(skin_list)) # str
+# print(len(skin_list))
