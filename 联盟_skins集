@@ -1,0 +1,33 @@
+'''
+黑暗之女
+https://game.gtimg.cn/images/lol/act/img/js/hero/1.js
+奥拉夫
+https://game.gtimg.cn/images/lol/act/img/js/hero/2.js
+'''
+import requests
+import os
+url = 'https://game.gtimg.cn/images/lol/act/img/js/heroList/hero_list.js'
+headers = {
+    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0'
+}
+res =requests.get('https://game.gtimg.cn/images/lol/act/img/js/heroList/hero_list.js')
+# print(res.json())
+with open('hero_list_json.txt','w') as f:
+    f.write(res.text)
+for item in res.json()['hero']:
+    if not os.path.exists(item['name']):
+        os.mkdir(item['name'])
+
+for item in res.json()['hero']:
+    url = f'https://game.gtimg.cn/images/lol/act/img/js/hero/{item["heroId"]}.js'
+    res_skins = requests.get(url=url,headers=headers)
+    for item2 in res_skins.json()['skins']:
+        url_skin = item2['mainImg']
+        if url_skin and item['name']==item2['heroName']:
+            print(f"item['name']:{item['name']}")
+            print(f"item2['name']:{item2['name']}")
+            item_2 = item2['name'].replace('/','_')
+            with open(fr'{item["name"]}/{item_2}.jpg','wb') as f:
+                print(url_skin)
+                res_skin = requests.get(url_skin,headers=headers)
+                f.write(res_skin.content)
