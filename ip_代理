@@ -1,0 +1,30 @@
+import requests
+api_url = 'https://dps.kdlapi.com/api/getdps/?secret_id=okdnneqttnwsm51mhcpi&signature=mzv4yls2birdrwvh70fndoi47a4xkphz&num=1&pt=1&sep=1'
+username ='d2888998611'
+password ='oztwvtuo'
+url = 'https://movie.douban.com/'
+headers = {
+    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0'
+}
+
+
+# i = 1
+# while 1000:
+#     res = requests.get(url,headers=headers)
+#     if res.status_code ==200:
+#         print(f"第{i}次访问成功")
+#         i += 1
+
+proxy_ip = requests.get(api_url).text
+print(proxy_ip)
+proxies ={
+    'http':"http://%(username)s:%(password)s@%(proxy_ip)s"%{'username':username,'password':password,'proxy_ip':proxy_ip},
+    'https':'http://%(username)s:%(password)s@%(proxy_ip)s'%{'username':username,'password':password,'proxy_ip':proxy_ip}
+}
+print(proxies)
+res = requests.get(url,headers=headers,proxies=proxies)
+print(res.text)
+if res.status_code == 200:
+    print('访问成功')
+else:
+    print('访问失败')
