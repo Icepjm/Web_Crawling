@@ -1,0 +1,24 @@
+'''
+判断网页请求的方法：
+    get():
+        ①在浏览器中，可在地址栏输入url直接访问的就是get请求
+        ②url中携带参数的
+        ③默认是GET请求
+    post();
+        ①如果页面能正常打开，但是部分数据没有正常加载，可能某些数据是post请求或AJAX请求
+
+    在网络开发工具中的 Network(网络)选项卡中，第一条请求通常代表页面的主文档请求，
+    因此它的请求方式(GET/POST)可以代表整个页面的基本加载方式
+'''
+import requests
+url ='https://user.qzone.qq.com/2181808743'
+# 没有登录，则不需要设置cookie
+headers ={
+    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0',
+    'cookie':'eas_sid=WKzS3ZXHvzX7jkS0dnrWbHM1Cz; pac_uid=0_Qjb5jynN361iS; _qimei_uuid42=1951913322a100a6571c8add06ed04de29445da543; _qimei_fingerprint=634953f821cbb95915b88ac3a1e27b85; _qimei_q36=; _qimei_h38=19c5fb2c571c8add06ed04de02000007419519; RK=zTtYlq6v5U; ptcz=d24c024ce67a681652607494eee0169867a4734f41b21aa423a150a4ab705235; pgv_pvid=4113759886; _qpsvr_localtk=0.10911040767920421; pgv_info=ssid=s8741524240; uin=o2181808743; skey=@YksJ8SKRU; p_uin=o2181808743; pt4_token=ibDnzRXd8xT0goWZ0JaW7429x6tWEgu7w0JwmPzr-oA_; p_skey=QAs9HhLKUNr6PEYr97vj2sUL8Z97B-nNn0XPKVftxLg_; Loading=Yes; tgw_l7_route=0f2b50312d2fc0f64fcf3de330fdceee; QZ_FE_WEBP_SUPPORT=1; cpu_performance_v8=17'
+}
+
+res = requests.get(url,headers=headers)
+print(res.text)
+with open('index.html','w',encoding='utf-8') as f:
+    f.write(res.text)
