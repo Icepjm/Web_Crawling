@@ -1,0 +1,39 @@
+'''
+CORS(Cross-Origin Resource Sharing-跨域资源共享)：
+    1.简单请求
+    2.预检请求
+    涉及cross-oigin 访问失败、京东网站爬取失败
+'''
+import requests
+from lxml import etree
+import os
+url = 'https://api.m.jd.com/?h5st=20250603193252365%3Baaazxiwd9jw02p21%3Bb5216%3Btk03wdc6d1db518noLfniUGLjW58m7Mw0wv4dMCUsPSLvf_qsrrRVCxjJr_hlfLA9fPpSfslGeKxILoOyONNZAPuxoPL%3Bc6245ff2945a109956909c7ddebdd0054adf99f50eb80a152616c60769460ec7%3B5.1%3B1748950371365%3BsmePkmci8uHi_SHU1e4RFNHQNpYWMuMgMuHVMusmk_Mh9uMgM24WLlsmOGujMuLV9iIiJlYh2eoh5Wbg9iYhKRrgJZIVLZLV7iLW_abVMuMgMuHdCRIWJRHmOuMsCmcWNVIiKRLV_iIhNZoiMpYgKpIW2S7iJVIh9aLh2uLV4msm0m8SNVHTNhImOuMsCqbjOGLm6aHWMusmk_Mm62ciAaLRPZoTFV4X5OImOGLm4lsmOGujMSKYsdrYbNZb8WKZ9NJmOGLmBxoVApISMusmk_Mm8iLTFRJmOGLmItHmOuMsC6nmOGOiOGLm9qbRMlsmOusmk_ci9uMgMubi5lImOusmOGuj26sm0mMi9aHWMusmOuMsCmsgNF6TWV5TFlLYHZbSMuMgM64TK1YW8lsmOusmk_siOGLm2aHWMusmOuMsCurm0m8h5lImOusmOGuj3mrm0mMh5lImOusmOGuj_uMgMabRMlsmOusmk_siOGLm6aHWMusmOuMsCqrhOGLm7aHWMusmOuMsCmshAqLj_msm0mci5lImOusmOGuj_uMgMC4RMusmOuMsCarm0m8SClsmOusmk_siOGLmClsmOusmk_siOGLmKRHmOusmOG_QOGLmK1YV6NXVMusmk_cPztMgMunSMusmk_Mm6WrQOCrh42YUXt8g_2si9usZgt8S3xoVAJ4ZMuMgMqYR7lsmOG_Q%3B7efa9ef3ae6b0eaa2692d1ff6f193dc365bcec9df0373339640ab7a376e824f4%3BtenjKJKT-JoRL1YRI9MT-J4S8ZIZ61YVF94WCeHTJJoTL9cQKxIWCeYU_tXW&appid=www-jd-com&body=%7B%22page%22%3A1%2C%22pagesize%22%3A25%2C%22area%22%3A%2212_978_0_0%22%2C%22source%22%3A%22pc-home%22%2C%22gb%22%3A1%7D&clientVersion=1.0.0&client=pc&functionId=pc_home_feed&t=1748950371362&uuid=76161171.17486084689091453940469.1748608469.1748931644.1748950357.5&loginType=3&x-api-eid-token=jdd03S3PDE4OX5T7WVFIUF3HMKCF3I4PY5VZ7XWG2WSA4RY26YTJLV3TPZFXO3DXJN3MGQNJHROSRQLZQXSHDAEHOMA3CI4AAAAMXGWIJKKYAAAAADOGIQNJXCA4B5EX&callback=jsonpMore2Goods&_=1748950371369'
+headers = {
+    'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0',
+    'h5st': '20250603193252365;aaazxiwd9jw02p21;b5216;tk03wdc6d1db518noLfniUGLjW58m7Mw0wv4dMCUsPSLvf_qsrrRVCxjJr_hlfLA9fPpSfslGeKxILoOyONNZAPuxoPL;c6245ff2945a109956909c7ddebdd0054adf99f50eb80a152616c60769460ec7;5.1;1748950371365;smePkmci8uHi_SHU1e4RFNHQNpYWMuMgMuHVMusmk_Mh9uMgM24WLlsmOGujMuLV9iIiJlYh2eoh5Wbg9iYhKRrgJZIVLZLV7iLW_abVMuMgMuHdCRIWJRHmOuMsCmcWNVIiKRLV_iIhNZoiMpYgKpIW2S7iJVIh9aLh2uLV4msm0m8SNVHTNhImOuMsCqbjOGLm6aHWMusmk_Mm62ciAaLRPZoTFV4X5OImOGLm4lsmOGujMSKYsdrYbNZb8WKZ9NJmOGLmBxoVApISMusmk_Mm8iLTFRJmOGLmItHmOuMsC6nmOGOiOGLm9qbRMlsmOusmk_ci9uMgMubi5lImOusmOGuj26sm0mMi9aHWMusmOuMsCmsgNF6TWV5TFlLYHZbSMuMgM64TK1YW8lsmOusmk_siOGLm2aHWMusmOuMsCurm0m8h5lImOusmOGuj3mrm0mMh5lImOusmOGuj_uMgMabRMlsmOusmk_siOGLm6aHWMusmOuMsCqrhOGLm7aHWMusmOuMsCmshAqLj_msm0mci5lImOusmOGuj_uMgMC4RMusmOuMsCarm0m8SClsmOusmk_siOGLmClsmOusmk_siOGLmKRHmOusmOG_QOGLmK1YV6NXVMusmk_cPztMgMunSMusmk_Mm6WrQOCrh42YUXt8g_2si9usZgt8S3xoVAJ4ZMuMgMqYR7lsmOG_Q;7efa9ef3ae6b0eaa2692d1ff6f193dc365bcec9df0373339640ab7a376e824f4;tenjKJKT-JoRL1YRI9MT-J4S8ZIZ61YVF94WCeHTJJoTL9cQKxIWCeYU_tXW',
+    'appid': 'www-jd-com',
+    'body': '{"page":1,"pagesize":25,"area":"12_978_0_0","source":"pc-home","gb":1}',
+    'clientVersion': '1.0.0',
+    'client': 'pc',
+    'functionId': 'pc_home_feed',
+    't': '1748950371362',
+    'uuid': '76161171.17486084689091453940469.1748608469.1748931644.1748950357.5',
+    'loginType': '3',
+    'x-api-eid-token': 'jdd03S3PDE4OX5T7WVFIUF3HMKCF3I4PY5VZ7XWG2WSA4RY26YTJLV3TPZFXO3DXJN3MGQNJHROSRQLZQXSHDAEHOMA3CI4AAAAMXGWIJKKYAAAAADOGIQNJXCA4B5EX',
+    'callback': 'jsonpMore2Goods',
+    '_': '1748950371369'
+
+}
+res = requests.get(url,headers=headers)
+html = etree.HTML(res.text)
+print(res.text)
+tag_data = html.xpath('//html/body/div[2]/div/div[1]/div/div[3]/div/ul/li/a/div[2]/p/text()')
+# tag_data = html.xpath('//*[@id="10151616072158"]/a/div[2]/p')
+if not os.path.exists('objects'):
+    os.mkdir('objects')
+# print(type(tag_data)) # list
+print(tag_data)
+for item in tag_data:
+    with open(f'./objects/index_{list.index(item)}.txt') as f:
+        f.write('item')
+        print('succ')
