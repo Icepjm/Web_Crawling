@@ -1,0 +1,62 @@
+from multiprocessing import Process
+from multiprocessing import JoinableQueue as Queue
+import time
+
+"""
+一般：
+    进程之间是深拷贝
+    线程之间是浅拷贝 
+"""
+
+ls = Queue()
+def f1(num):
+    if num ==1:
+        print(f"参数{num}被输出")
+    time.sleep(1)
+    ls.put('线程1')
+    print('线程1')
+
+def f2(num):
+    if num =="2":
+        print(f"参数{num}被输出")
+    ls.put("线程2")
+    print('线程2')
+
+
+def f3(num):
+    if num ==3:
+        print(f"参数{num}被输出")
+    ls.put("线程3")
+    ls.put('qaaa')
+    print("线程3")
+    print(f"线程3中，ls的长度为{ls.qsize()}")
+
+"""
+if __name__ =="main": 介绍
+    仅在模块直接运行时候执行，模块被导入时候不会执行
+        避免不必要代码执行： 如果脚本中有测试代码或执行逻辑，但其他模块导入时不需要运行这些代码
+    
+    提高代码复用性：程序可以独立执行，也可以被导入其他模块
+    
+    标准化入口：同常将主逻辑放在 if __name__ =="main": 下面，明确程序的入口
+"""
+if __name__ == "__main__":
+    # 队列里面可以放入任意类型对象 包括但不限于 整形、浮点型、字符、字符串、字典、布尔值、列表、元组、函数、类、对象...
+
+    # 传入的参数需要是可迭代的
+    # args换成 kwargs会报错
+    t1 = Process(target=f1,args=(1,))
+    t2 = Process(target=f2,args='2',)
+    # 如果传入参数是字典的话，需要用 kwargs,使用args的话(不会报错)，会传入 key值(num)
+    t3 = Process(target=f3,args={'num':3})
+    t1.start()
+    t2.start()
+    t3.start()
+    time.sleep(2)
+    print("ls:",ls,"ls_length:",ls.qsize())
+    """
+        JoinableQueue对象不能被迭代
+        for item in ls:
+            print(item)
+    """
+    print('主程序')
