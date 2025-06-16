@@ -1,0 +1,40 @@
+from multiprocessing import Process
+import time
+from multiprocessing import JoinableQueue as Queue
+
+class sider():
+    def __init__(self):
+        self.q = Queue()
+
+    def put_q(self):
+        time.sleep(3)
+        for i in range(10):
+            self.q.put(i)
+            print(f"队列元素{i}被存入")
+
+    # def get_q(self):
+    #     for i in range(10):
+    #         print(f"队列元素{self.q.get()}被取出")
+
+    # 通常情况，取队列一般为死循环（因为队列元素数量不确定）
+    def get_q(self):
+        while True:
+            print(f"队列元素{self.q.get()}被取出")
+
+    def run(self):
+        print("run方法开始执行")
+        t1 = Process(target=self.put_q)
+        t2 = Process(target=self.get_q)
+        # 进程执行前进行赋值，队列执行后不可以赋值
+        # t2是守护进程，t1是非守护进程（普通进程）
+        t2.daemon = True
+        t1.start()
+        t2.start()
+        # 主程序必须等待t1程序执行完毕，才能继续执行
+        t1.join()
+
+
+if __name__ == "__main__":
+    sid = sider()
+    sid.run()
+    print('主进程执行结束')
