@@ -1,0 +1,115 @@
+import requests
+import os
+from multiprocessing import Process
+import time
+
+
+'''
+1、多进程编程
+2、可以在多个进程间共享数据
+3、由于涉及进程通信，所以性能开销较大
+'''
+from multiprocessing import Queue
+
+'''
+1、多线程编程
+2、多个线程间替换数据
+3、无法跨进程使用
+'''
+# from queue import Queue
+
+
+def html_request():
+    print('开始爬取')
+    url = 'https://pvp.qq.com/web201605/js/herolist.json'
+    header={
+        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0'
+    }
+    print('发送请求')
+    res = requests.get(url,headers=header)
+    print('请求成功')
+    # utf-8-sig 就比 utf-8多了标识字符
+    # res.encoding = 'utf-8'
+    # print(res.text)
+    res_json = res.json()
+    # print(type(res.json())) # <class 'list'>
+    # print(type(res.json)) #<class 'method'>
+    # print(res_json)
+    return res_json
+
+
+def storeName(res_json):
+    for item in res_json:
+       hero_list.put(item['cname'])
+
+def mkdir(hero_list,start_time):
+    print('获取英雄名称')
+    print('hero_list.empty():',hero_list.empty())
+    while not hero_list.empty():
+        cname = hero_list.get()
+        print('名称获取成功')
+        path = f'./hero_list/{cname}'
+        print('文件夹开始创建')
+        if not os.path.exists(path):
+            time.sleep(1)
+            os.mkdir(path)
+            print(path,'文件夹创建成功')
+    # if hero_list.empty:
+    #     end_time = time.time()
+    #     print(f"多进程duration:{end_time-start_time}")
+
+    # print(os.path.exists(False)) True
+
+
+if __name__ =='__main__':
+    hero_list = Queue()
+    start_time = time.time()
+    print('主程序正在运行')
+    res_json = html_request()
+    storeName(res_json)
+    if not os.path.exists('./hero_list'):
+        os.mkdir('./hero_list')
+    # while not hero_list.empty():
+    #     mkdir()
+    '''
+    python中多进程机制：
+        从全局代码开始执行，并不是从指定的函数开始
+    '''
+
+    '''
+    子进程和主进程的内存空间是隔离的，也就是说子进程不会自动继承主进程中队列的数据，
+    queue.Queue不能跨进程共享数据，
+    multiprocessing.Queue，并且需要显式声名才可以跨进程共享数据
+    '''
+    lst = []
+    for i in range(13):
+        p = Process(target=mkdir,args=(hero_list,start_time))
+        p.start()
+        lst.append(p)
+    for j in lst:
+        j.join()
+    # p1 = Process(target=mkdir,args=(hero_list,))
+    # p2 = Process(target=mkdir,args=(hero_list,))
+    # p3 = Process(target=mkdir,args=(hero_list,))
+    # p4 = Process(target=mkdir,args=(hero_list,))
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p4.start()
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    # p4.join()
+    end_time = time.time()
+    duration = end_time - start_time
+    # print(f'开启四个进程后：duration:{duration}') # 33.28886
+    print(f'未开启进程后：duration:{duration}') # 126.44461
+    print('=======================================================================')
+    '''
+        for item in hero_list:
+        print(item)
+        
+        Queue:对象是不可迭代的
+
+    '''
+    # print(list(hero_list.queue)) queue.Queue特有，multiprocessing.Queue没有这个方法
